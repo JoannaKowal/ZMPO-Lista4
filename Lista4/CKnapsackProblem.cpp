@@ -2,14 +2,7 @@
 
 CKnapsackProblem::CKnapsackProblem()
 {
-}
-
-CKnapsackProblem::CKnapsackProblem(int numberOfItems, double capacity, std::vector<double> values, std::vector<double> weights)
-{
-	this->numberOfItems = numberOfItems;
-	this->capacity = capacity;
-	this->values = values;
-	this->weights = weights;
+	initialized = false;
 }
 
 int CKnapsackProblem::getNumberOfItems()
@@ -22,13 +15,61 @@ double CKnapsackProblem::getCapacity()
 	return capacity;
 }
 
-std::vector<double> CKnapsackProblem::getValues()
+double CKnapsackProblem::calculateFitness(std::vector<int>& genotype)
 {
-	
-	return values;
+	double value = 0;
+	double weight = 0;
+	for (int i = 0; i < numberOfItems; i++)
+	{
+		if (genotype[i] == 1)
+		{
+			weight += weights[i];
+			value += values[i];
+		}
+	}
+	if (weight > capacity)
+	{
+		return 0.0;
+	}
+	return value;
 }
 
-std::vector<double> CKnapsackProblem::getWeights()
+bool CKnapsackProblem::initialize( double capacity, std::vector<double> values, std::vector<double> weights)
 {
-	return weights;
+	if (capacity > 0)
+	{
+		if(values.size() > 0 && values.size() == weights.size())
+		{
+			bool valuesCorrect = true;
+			for (int i = 0; i < values.size() && valuesCorrect; i++)
+			{
+				if (values[i] <= 0 || weights[i] <= 0)
+				{
+					valuesCorrect = false;
+				}
+			}
+			if (valuesCorrect)
+			{
+				this->numberOfItems = values.size();
+				this->capacity = capacity;
+				this->values = values;
+				this->weights = weights;
+				this->initialized = true;
+			}
+		}
+		else
+		{
+			std::cout << INCORRECT_NUMBER_OF_ITEMS << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << INCORRECT_CAPACITY << std::endl;
+	}
+	return this->initialized;
+}
+
+bool CKnapsackProblem::isInitialized()
+{
+	return initialized;
 }
